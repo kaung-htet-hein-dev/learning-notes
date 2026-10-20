@@ -1,15 +1,25 @@
-import groovy from "highlight.js/lib/languages/groovy";
 import { common } from "lowlight";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+import type { Root, RootContent } from "mdast";
+import { bash, groovy, text, tree } from "@/lib/highlight-languages";
 import { Mermaid } from "./mermaid";
 
 // Code fences are colored on the server (no client JS); token colors live in globals.css.
 const highlight: [typeof rehypeHighlight, Parameters<typeof rehypeHighlight>[0]] = [
   rehypeHighlight,
-  { languages: { ...common, groovy }, plainText: ["text", "mermaid"] },
+  { languages: { ...common, groovy, tree, bash, plaintext: text }, plainText: ["mermaid"] },
 ];
+
+// Fences without a language get the light `text` grammar instead of none.
+function defaultCodeLang() {
+  const visit = (node: Root | RootContent) => {
+    if (node.type === "code") node.lang ??= "text";
+    if ("children" in node) node.children.forEach(visit);
+  };
+  return visit;
+}
 
 // Raw HTML is never enabled (no rehype-raw): stored content cannot inject markup.
 // ```mermaid fences are the one exception, rendered by Mermaid in strict mode.
@@ -17,7 +27,7 @@ export function Markdown({ source }: { source: string }) {
   return (
     <div className="prose prose-invert prose-note reading max-w-none">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, defaultCodeLang]}
         rehypePlugins={[highlight]}
         skipHtml
         components={{

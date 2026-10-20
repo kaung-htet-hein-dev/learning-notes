@@ -196,6 +196,7 @@
   background: var(--surface);
   padding: 0.1em 0.35em;
   font-weight: 500;
+  color: #ffa657;
 }
 
 .prose-note :not(pre) > code::before,
@@ -267,6 +268,15 @@
 .prose-note .hljs-selector-class,
 .prose-note .hljs-selector-id {
   color: #7ee787;
+}
+
+.prose-note .hljs-punctuation {
+  color: #6e7681;
+}
+
+/* Inside ```tree fences, files stay readable rather than string-blue. */
+.prose-note .language-tree .hljs-string {
+  color: var(--text);
 }
 
 .prose-note .hljs-addition {

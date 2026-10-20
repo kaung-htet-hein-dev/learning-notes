@@ -51,10 +51,15 @@ not like a summary of the article.
     `sequenceDiagram`, `stateDiagram-v2`). `src/components/mermaid.tsx`
     renders it in the site's dark theme. Quote labels (`A["..."]`) and use
     `<br/>` for a second line. Prefer `TD` for 4+ nodes so it fits on mobile.
-  - **File trees and memory/byte layouts → ` ```text `** ASCII. Use only
-    plain ASCII (`+ - | \` > v`): the site font (JetBrains Mono, latin
-    subset) has no box-drawing glyphs (`┌ ─ │ ├ └`), so they fall back to
-    another font and the columns break. Keep lines under ~70 characters.
+  - **File trees → ` ```tree `** (`|-- name   description`): branches are
+    muted, folders end in `/`, text after 2+ spaces shows as a comment.
+  - **Memory/byte layouts and other ASCII art → ` ```text `**.
+  - In `tree` and `text`, use only plain ASCII (`+ - | \` > v`): the site
+    font (JetBrains Mono, latin subset) has no box-drawing glyphs
+    (`┌ ─ │ ├ └`), so they fall back to another font and the columns
+    break. Keep lines under ~70 characters.
+- **Tag every code fence with its language** (`ts`, `json`, `sh`, `groovy`,
+  `sql`, ...) so it gets syntax colors.
   - Raw HTML and `<svg>` are skipped by the renderer and never show.
 - **Define terms on first use.** Bold the term, then explain it in one line.
 - **Call out pitfalls.** Note common mistakes and misconceptions.
