@@ -6,7 +6,7 @@ export type SelfTestItem = { q: string; a: string };
 type EntryRow = {
   id: string;
   slug: string;
-  url: string;
+  url: string[] | null; // url[0] is the primary source
   title: string;
   description: string;
   author: string | null;
@@ -25,7 +25,7 @@ type EntryRow = {
 type EntryInsert = {
   id?: string;
   slug: string;
-  url: string;
+  url?: string[] | null;
   title: string;
   description: string;
   author?: string | null;

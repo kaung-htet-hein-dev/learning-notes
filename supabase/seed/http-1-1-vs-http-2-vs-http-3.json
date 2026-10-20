@@ -1,5 +1,5 @@
 {
-  "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Evolution_of_HTTP",
+  "url": ["https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Evolution_of_HTTP"],
   "slug": "http-1-1-vs-http-2-vs-http-3",
   "title": "HTTP/1.1 vs HTTP/2 vs HTTP/3",
   "description": "Every HTTP version fights head-of-line blocking at a different layer — from one-request-per-connection, to multiplexed TCP streams, to QUIC over UDP.",

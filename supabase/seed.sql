@@ -1,7 +1,7 @@
 -- Sample data. Generated from supabase/seed/*.json — run after the migration.
--- Re-runnable: upserts on url.
+-- Re-runnable: upserts on slug.
 insert into entries (slug, url, title, description, author, source_name, read_at, body_md, self_test, my_note, tags)
-values ($seed$http-1-1-vs-http-2-vs-http-3$seed$, $seed$https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Evolution_of_HTTP$seed$, $seed$HTTP/1.1 vs HTTP/2 vs HTTP/3$seed$, $seed$Every HTTP version fights head-of-line blocking at a different layer — from one-request-per-connection, to multiplexed TCP streams, to QUIC over UDP.$seed$, null, $seed$MDN Web Docs$seed$, $seed$2026-10-18$seed$::date, $seed$## The one-line version
+values ($seed$http-1-1-vs-http-2-vs-http-3$seed$, array[$seed$https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Evolution_of_HTTP$seed$], $seed$HTTP/1.1 vs HTTP/2 vs HTTP/3$seed$, $seed$Every HTTP version fights head-of-line blocking at a different layer — from one-request-per-connection, to multiplexed TCP streams, to QUIC over UDP.$seed$, null, $seed$MDN Web Docs$seed$, $seed$2026-10-18$seed$::date, $seed$## The one-line version
 
 Each HTTP version mostly attacks the same enemy — **waiting** — but at a different layer. HTTP/1.1 waits on the connection, HTTP/2 fixes that but still waits on TCP, and HTTP/3 swaps TCP out entirely.
 
@@ -78,7 +78,7 @@ Servers advertise HTTP/3 with an `Alt-Svc` response header, so the first visit u
 - HTTP/2 is the baseline you can assume today; HTTP/3 is a CDN toggle for most sites and pays off most on high-latency or lossy networks.
 - QUIC running in user space means it can evolve without OS kernel updates — but some corporate networks block or throttle UDP, which is why browsers always keep a TCP fallback.
 $seed$, $seed$[{"q": "HTTP/2 multiplexes streams on one connection. Why can a single lost packet still stall every stream?", "a": "Because HTTP/2 runs on TCP, which delivers bytes strictly in order. Until the lost packet is retransmitted, TCP holds back all later bytes — including frames belonging to unrelated streams. Head-of-line blocking moved from the HTTP layer to the transport layer."}, {"q": "Why did domain sharding and sprite sheets help on HTTP/1.1 but hurt on HTTP/2?", "a": "On HTTP/1.1 they worked around the per-origin connection limit and sequential requests. On HTTP/2 one multiplexed connection already handles many requests in parallel, so extra origins add DNS/TLS setup and split congestion control, while giant bundles hurt cache granularity."}, {"q": "How does HTTP/3 keep a download going when a phone moves from Wi-Fi to cellular?", "a": "QUIC identifies connections by a connection ID instead of the IP/port 4-tuple, so when the client's address changes it can keep using the same connection rather than re-handshaking."}, {"q": "Why does HTTP/3 use QPACK instead of HPACK?", "a": "HPACK relies on headers arriving in order to keep the compression tables in sync. QUIC streams can arrive out of order relative to each other, so QPACK was designed to update its tables without that assumption."}]$seed$::jsonb, $seed$Every version is the same fight against waiting — just pushed one layer further down the stack.$seed$, array['networking', 'http', 'web-performance'])
-on conflict (url) do update set
-  title = excluded.title, description = excluded.description, author = excluded.author,
+on conflict (slug) do update set
+  url = excluded.url, title = excluded.title, description = excluded.description, author = excluded.author,
   source_name = excluded.source_name, read_at = excluded.read_at, body_md = excluded.body_md,
   self_test = excluded.self_test, my_note = excluded.my_note, tags = excluded.tags;

@@ -7,7 +7,7 @@ type MockNote = Omit<Entry, "id" | "word_count" | "created_at" | "updated_at">;
 export const mockNotes: MockNote[] = [
   {
     slug: "react-server-components-mental-model",
-    url: "https://react.dev/reference/rsc/server-components",
+    url: ["https://react.dev/reference/rsc/server-components"],
     title: "A mental model for React Server Components",
     description:
       "Server Components are not SSR with extra steps. They are a second component tree that runs once, on the server, and ships its output — not its code.",
@@ -50,7 +50,7 @@ Children are the escape hatch. A Client Component can receive \`children\` that 
   },
   {
     slug: "goroutines-vs-the-event-loop",
-    url: "https://go.dev/blog/waza-talk",
+    url: ["https://go.dev/blog/waza-talk"],
     title: "Goroutines vs the JavaScript event loop",
     description:
       "Both handle thousands of concurrent tasks on few threads. JavaScript makes you mark every pause with await; Go hides the pauses inside the runtime.",
@@ -87,7 +87,7 @@ Real parallelism means real data races. In Node, two callbacks never touch a var
   },
   {
     slug: "how-postgres-b-tree-indexes-work",
-    url: "https://www.postgresql.org/docs/current/btree.html",
+    url: ["https://www.postgresql.org/docs/current/btree.html"],
     title: "How Postgres B-tree indexes actually find a row",
     description:
       "An index is a sorted copy of some columns plus a pointer back to the table. Most query-plan surprises come from forgetting the second half.",
@@ -118,7 +118,7 @@ If every column the query needs is in the index, Postgres can skip the heap — 
   },
   {
     slug: "css-container-queries",
-    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries",
+    url: ["https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries"],
     title: "Container queries make components honest",
     description:
       "Media queries ask how big the screen is. Container queries ask how much room this component was given — the question a component can actually use.",
@@ -152,7 +152,7 @@ A card in a sidebar and the same card in a main column live on the same screen. 
   },
   {
     slug: "what-happens-during-a-dns-lookup",
-    url: "https://howdns.works/",
+    url: ["https://howdns.works/"],
     title: "What actually happens during a DNS lookup",
     description:
       "Your laptop asks one resolver. That resolver does the walking: root, then TLD, then the domain's own nameservers — with caches short-circuiting almost every step.",
@@ -180,7 +180,7 @@ Nothing propagates. Old answers simply live in caches until their TTL expires. L
   },
   {
     slug: "sessions-vs-jwt",
-    url: "https://developer.okta.com/blog/2017/08/17/why-jwts-suck-as-session-tokens",
+    url: ["https://developer.okta.com/blog/2017/08/17/why-jwts-suck-as-session-tokens"],
     title: "Sessions vs JWTs for web auth",
     description:
       "A JWT is a signed claim you cannot take back. A session ID is a pointer into state you control. For browser logins, the boring option usually wins.",
@@ -208,7 +208,7 @@ Browser logins. An \`HttpOnly\`, \`Secure\`, \`SameSite=Lax\` cookie holding a r
   },
   {
     slug: "react-native-new-architecture",
-    url: "https://reactnative.dev/architecture/landing-page",
+    url: ["https://reactnative.dev/architecture/landing-page"],
     title: "React Native's new architecture without the jargon",
     description:
       "The bridge is gone. JavaScript now holds direct references to native objects through JSI, which makes synchronous calls and concurrent rendering possible.",

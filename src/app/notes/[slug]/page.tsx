@@ -64,15 +64,25 @@ export default async function NotePage({ params }: PageProps<"/notes/[slug]">) {
           <time dateTime={entry.read_at}>{formatDate(entry.read_at)}</time>
           <span aria-hidden="true">·</span>
           <span>{readingTime(entry.word_count)}</span>
-          <span aria-hidden="true">·</span>
-          <span>
-            Source:{" "}
-            <a href={entry.url} target="_blank" rel="noopener noreferrer" className="link">
-              {sourceLabel(entry.source_name, entry.url)}
-              <span aria-hidden="true"> ↗</span>
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          </span>
+          {entry.url && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>
+                {entry.url.length > 1 ? "Sources" : "Source"}:{" "}
+                {entry.url.map((url, i) => (
+                  <span key={url}>
+                    {i > 0 && ", "}
+                    {/* source_name describes the primary source only */}
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="link">
+                      {sourceLabel(i === 0 ? entry.source_name : null, url)}
+                      <span aria-hidden="true"> ↗</span>
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  </span>
+                ))}
+              </span>
+            </>
+          )}
         </p>
       </header>
 

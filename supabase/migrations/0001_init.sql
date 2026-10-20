@@ -5,7 +5,8 @@
 create table entries (
   id          uuid primary key default gen_random_uuid(),
   slug        text not null unique,              -- URL: /notes/[slug]
-  url         text not null unique,              -- original article
+  url         text[]                             -- original article(s); url[1] is the primary source.
+              check (cardinality(url) >= 1),     -- null when there is no source, never '{}'
   title       text not null,
   description text not null,                     -- 1–2 lines for feed rows
   author      text,
@@ -32,6 +33,7 @@ create table entries (
 
 create index entries_search_idx  on entries using gin (search);
 create index entries_tags_idx    on entries using gin (tags);
+create index entries_url_idx     on entries using gin (url);      -- url @> array['https://…']
 create index entries_read_at_idx on entries (read_at desc);
 
 alter table entries enable row level security;
