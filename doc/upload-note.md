@@ -72,9 +72,19 @@ not like a summary of the article.
    a numbered Q/A list. Apply the user's edits and re-preview until they
    approve. Only approved text gets uploaded.
 4. **Output the SQL** (or run the script).
-5. **Remind about caching:** reads use `"use cache"` + `cacheLife("max")`, so
-   the note shows in `pnpm dev` but not on the deployed site until a redeploy
-   or `revalidateTag`.
+5. **Revalidate the deployed cache.** Reads use `"use cache"` +
+   `cacheLife("max")` (refresh after 30 days), so a new note shows in
+   `pnpm dev` but not on the deployed site until revalidated. After upload:
+   ```sh
+   curl -X POST "$SITE_URL/api/revalidate" \
+     -H "x-revalidate-secret: $REVALIDATE_SECRET" \
+     -H "Content-Type: application/json" \
+     -d '{"slug":"<slug>"}'
+   ```
+   `SITE_URL` and `REVALIDATE_SECRET` come from `.env.local`; never print the
+   secret. Expect `{"revalidated":true,...}`; `401` means the secret differs
+   from the one set in Vercel. If the user pastes SQL instead, give them this
+   command to run.
 
 ## SQL template
 
