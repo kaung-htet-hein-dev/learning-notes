@@ -45,11 +45,17 @@ not like a summary of the article.
 - **Show, don't just tell.** Add a concrete example, code snippet, or small
   walkthrough for each key idea.
 - **Add a diagram whenever possible.** Flows, architectures, request paths,
-  data structures, state changes, before/after comparisons. Draw it as ASCII
-  art in a ` ```text ` fence and put it next to the paragraph it explains.
-  The renderer (`src/components/markdown.tsx`) has no Mermaid and skips raw
-  HTML, so ` ```mermaid ` and `<svg>` will not render as diagrams. Keep lines
-  under ~70 characters so they fit on mobile.
+  data structures, state changes, before/after comparisons. Put it next to
+  the paragraph it explains.
+  - **Boxes and arrows → ` ```mermaid `** (`flowchart TD/LR`,
+    `sequenceDiagram`, `stateDiagram-v2`). `src/components/mermaid.tsx`
+    renders it in the site's dark theme. Quote labels (`A["..."]`) and use
+    `<br/>` for a second line. Prefer `TD` for 4+ nodes so it fits on mobile.
+  - **File trees and memory/byte layouts → ` ```text `** ASCII. Use only
+    plain ASCII (`+ - | \` > v`): the site font (JetBrains Mono, latin
+    subset) has no box-drawing glyphs (`┌ ─ │ ├ └`), so they fall back to
+    another font and the columns break. Keep lines under ~70 characters.
+  - Raw HTML and `<svg>` are skipped by the renderer and never show.
 - **Define terms on first use.** Bold the term, then explain it in one line.
 - **Call out pitfalls.** Note common mistakes and misconceptions.
 - **Keep it scannable.** Short paragraphs, bullet lists, tables for
@@ -67,10 +73,12 @@ not like a summary of the article.
    If a row exists, upsert instead of insert.
 2. **Write the content** following the field rules.
 3. **Preview and wait for approval.** Do not output the SQL or run the script
-   yet. Show `title`, `slug`, `description`, `tags`, `url` as a short list;
-   `body_md` rendered as normal Markdown (not in a code fence); `self_test` as
-   a numbered Q/A list. Apply the user's edits and re-preview until they
-   approve. Only approved text gets uploaded.
+   yet. Always write `body_md` to a `<slug>.md` file (in the agent's
+   scratchpad or a temp dir, not the repo) and give the user its full
+   absolute path to review. In chat, show `title`, `slug`, `description`,
+   `tags`, `url` as a short list and `self_test` as a numbered Q/A list.
+   Apply the user's edits to the same file and re-preview until they
+   approve. Only approved text gets uploaded, read from that file.
 4. **Output the SQL** (or run the script).
 5. **Revalidate the deployed cache.** Reads use `"use cache"` +
    `cacheLife("max")` (refresh after 30 days), so a new note shows in
