@@ -1,26 +1,220 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+/* Design tokens — dark only, no light mode. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0b0b0b;
+  --surface: #141414;
+  --text: #f2f2f2;
+  --muted: #a8a8a8;
+  --border: #262626;
+
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-fg: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+
+  --font-serif: var(--font-source-serif), Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Shared page column: header, footer and every page body line up on it. */
+@utility page-width {
+  margin-inline: auto;
+  max-width: 880px;
+  padding-inline: --spacing(5);
+
+  @variant md {
+    padding-inline: --spacing(8);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    background: var(--bg);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  :focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Hairline borders by default. */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+}
+
+@layer components {
+  /* Long-form reading text: Source Serif 4, 20px mobile / 23px desktop. */
+  .reading {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    line-height: 1.7;
+    letter-spacing: -0.003em;
+  }
+
+  @media (min-width: 768px) {
+    .reading {
+      font-size: 23px;
+    }
+  }
+
+  /* Notes drawer: native <dialog> pinned to the left edge, slides in on open. */
+  .notes-drawer {
+    position: fixed;
+    inset: 0 auto 0 0;
+    margin: 0;
+    width: min(420px, 100vw - 48px);
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    transform: translateX(-100%);
+    transition:
+      transform 260ms cubic-bezier(0.32, 0.72, 0, 1),
+      overlay 260ms allow-discrete,
+      display 260ms allow-discrete;
+  }
+
+  .notes-drawer[open] {
+    transform: translateX(0);
+  }
+
+  @starting-style {
+    .notes-drawer[open] {
+      transform: translateX(-100%);
+    }
+  }
+
+  .notes-drawer::backdrop {
+    background: rgb(0 0 0 / 0);
+    transition:
+      background 260ms ease,
+      overlay 260ms allow-discrete,
+      display 260ms allow-discrete;
+  }
+
+  .notes-drawer[open]::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
+
+  @starting-style {
+    .notes-drawer[open]::backdrop {
+      background: rgb(0 0 0 / 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .notes-drawer,
+    .notes-drawer::backdrop {
+      transition: none;
+    }
+  }
+
+  .link {
+    color: var(--text);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 150ms ease;
+  }
+
+  .link:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* prose-invert mapped to the tokens. Unlayered on purpose: the typography plugin
+   emits .prose in @layer utilities, which would otherwise override these. */
+.prose-note {
+  --tw-prose-invert-body: var(--text);
+  --tw-prose-invert-headings: var(--text);
+  --tw-prose-invert-lead: var(--muted);
+  --tw-prose-invert-links: var(--text);
+  --tw-prose-invert-bold: var(--text);
+  --tw-prose-invert-counters: var(--muted);
+  --tw-prose-invert-bullets: var(--muted);
+  --tw-prose-invert-hr: var(--border);
+  --tw-prose-invert-quotes: var(--text);
+  --tw-prose-invert-quote-borders: #ffffff;
+  --tw-prose-invert-captions: var(--muted);
+  --tw-prose-invert-code: var(--text);
+  --tw-prose-invert-pre-code: var(--text);
+  --tw-prose-invert-pre-bg: var(--surface);
+  --tw-prose-invert-th-borders: var(--border);
+  --tw-prose-invert-td-borders: var(--border);
+  font-size: 20px;
+  line-height: 1.7;
+}
+
+@media (min-width: 768px) {
+  .prose-note {
+    font-size: 23px;
+  }
+}
+
+/* Small screens: wide tables and long inline code scroll or wrap instead of widening the page. */
+.prose-note .table-scroll {
+  overflow-x: auto;
+}
+
+.prose-note .table-scroll table {
+  margin-block: 0;
+}
+
+/* Inline code reads as code from the font and background; no literal backticks. */
+.prose-note :not(pre) > code {
+  border-radius: 4px;
+  background: var(--surface);
+  padding: 0.1em 0.35em;
+  font-weight: 500;
+}
+
+.prose-note :not(pre) > code::before,
+.prose-note :not(pre) > code::after {
+  content: none;
+}
+
+.prose-note :where(p, li) code {
+  overflow-wrap: anywhere;
+}
+
+.prose-note pre {
+  overflow-x: auto;
+}
+
+@media (max-width: 639px) {
+  .prose-note pre {
+    margin-inline: -20px;
+    border-radius: 0;
+    padding-inline: 20px;
+  }
 }

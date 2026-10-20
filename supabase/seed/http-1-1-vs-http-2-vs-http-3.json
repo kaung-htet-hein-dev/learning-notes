@@ -1,0 +1,34 @@
+{
+  "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Evolution_of_HTTP",
+  "slug": "http-1-1-vs-http-2-vs-http-3",
+  "title": "HTTP/1.1 vs HTTP/2 vs HTTP/3",
+  "description": "Every HTTP version fights head-of-line blocking at a different layer — from one-request-per-connection, to multiplexed TCP streams, to QUIC over UDP.",
+  "author": null,
+  "source_name": "MDN Web Docs",
+  "read_at": "2026-10-18",
+  "body_md": "## The one-line version\n\nEach HTTP version mostly attacks the same enemy — **waiting** — but at a different layer. HTTP/1.1 waits on the connection, HTTP/2 fixes that but still waits on TCP, and HTTP/3 swaps TCP out entirely.\n\n## HTTP/1.1: one request at a time per connection\n\nA connection carries one request/response exchange at a time. If a response is slow, everything queued behind it waits — that's **head-of-line (HOL) blocking** at the application layer.\n\nBrowsers worked around it by opening ~6 parallel connections per origin, and developers piled on hacks: domain sharding, sprite sheets, inlining, concatenated bundles. All of these exist only to dodge the protocol.\n\nPipelining was supposed to help (send several requests without waiting), but responses still had to come back *in order*, so one slow response still stalled the rest. Almost nobody shipped it.\n\n## HTTP/2: many streams, one connection\n\nHTTP/2 keeps the same semantics (methods, status codes, headers) but changes the wire format:\n\n- **Binary framing** — messages are split into frames tagged with a stream ID.\n- **Multiplexing** — frames from many streams interleave on a single TCP connection, so a slow response no longer blocks others *at the HTTP layer*.\n- **HPACK** header compression — repeated headers like cookies and user agents are sent as small table references.\n\n```mermaid\nsequenceDiagram\n    participant B as Browser\n    participant S as Server\n    Note over B,S: HTTP/1.1 — one connection, sequential\n    B->>S: GET /app.js\n    S-->>B: app.js\n    B->>S: GET /style.css\n    S-->>B: style.css\n    Note over B,S: HTTP/2 — one connection, interleaved streams\n    B->>S: stream 1: GET /app.js\n    B->>S: stream 3: GET /style.css\n    S-->>B: stream 3: style.css (frames)\n    S-->>B: stream 1: app.js (frames)\n```\n\nThe catch: TCP still delivers bytes strictly in order. Lose one packet and **every** stream on the connection waits for the retransmit. HOL blocking moved down a layer instead of disappearing — and on lossy mobile networks HTTP/2 can do worse than several HTTP/1.1 connections.\n\n## HTTP/3: HTTP over QUIC (UDP)\n\nHTTP/3 runs on **QUIC**, a transport built on UDP that reimplements reliability, congestion control, and encryption in user space.\n\n- **Independent streams at the transport layer** — a lost packet only stalls the stream it belonged to.\n- **Faster setup** — QUIC merges the transport and TLS 1.3 handshakes into one round trip, and resumed connections can send data immediately (0-RTT).\n- **Connection migration** — connections are identified by a connection ID rather than the IP/port 4-tuple, so switching from Wi-Fi to cellular doesn't drop the connection.\n- **QPACK** replaces HPACK, because HPACK assumed in-order delivery.\n\nYou can see which version a site negotiates with curl:\n\n```bash\n# Force HTTP/2 (falls back to 1.1 if unsupported)\ncurl -sI --http2 https://example.com -o /dev/null -w '%{http_version}\\n'\n\n# Try HTTP/3 (needs a curl build with HTTP/3 support)\ncurl -sI --http3 https://example.com -o /dev/null -w '%{http_version}\\n'\n```\n\nServers advertise HTTP/3 with an `Alt-Svc` response header, so the first visit usually happens over HTTP/2 and later ones upgrade.\n\n## Side by side\n\n| | HTTP/1.1 | HTTP/2 | HTTP/3 |\n|---|---|---|---|\n| Transport | TCP | TCP | QUIC over UDP |\n| Format | Text | Binary frames | Binary frames |\n| Concurrency | ~6 connections per origin | Multiplexed streams | Multiplexed streams |\n| HOL blocking | HTTP layer | TCP layer | Only within one stream |\n| Header compression | None | HPACK | QPACK |\n| Handshake (new conn) | TCP + TLS | TCP + TLS | Combined, 1 RTT (0-RTT resume) |\n| Survives network change | No | No | Yes (connection IDs) |\n\n## What it means in practice\n\n- The HTTP/1.1-era tricks (sharding, sprites, giant bundles) are now mostly **anti-patterns**: they defeat multiplexing and caching granularity.\n- HTTP/2 is the baseline you can assume today; HTTP/3 is a CDN toggle for most sites and pays off most on high-latency or lossy networks.\n- QUIC running in user space means it can evolve without OS kernel updates — but some corporate networks block or throttle UDP, which is why browsers always keep a TCP fallback.\n",
+  "self_test": [
+    {
+      "q": "HTTP/2 multiplexes streams on one connection. Why can a single lost packet still stall every stream?",
+      "a": "Because HTTP/2 runs on TCP, which delivers bytes strictly in order. Until the lost packet is retransmitted, TCP holds back all later bytes — including frames belonging to unrelated streams. Head-of-line blocking moved from the HTTP layer to the transport layer."
+    },
+    {
+      "q": "Why did domain sharding and sprite sheets help on HTTP/1.1 but hurt on HTTP/2?",
+      "a": "On HTTP/1.1 they worked around the per-origin connection limit and sequential requests. On HTTP/2 one multiplexed connection already handles many requests in parallel, so extra origins add DNS/TLS setup and split congestion control, while giant bundles hurt cache granularity."
+    },
+    {
+      "q": "How does HTTP/3 keep a download going when a phone moves from Wi-Fi to cellular?",
+      "a": "QUIC identifies connections by a connection ID instead of the IP/port 4-tuple, so when the client's address changes it can keep using the same connection rather than re-handshaking."
+    },
+    {
+      "q": "Why does HTTP/3 use QPACK instead of HPACK?",
+      "a": "HPACK relies on headers arriving in order to keep the compression tables in sync. QUIC streams can arrive out of order relative to each other, so QPACK was designed to update its tables without that assumption."
+    }
+  ],
+  "my_note": "Every version is the same fight against waiting — just pushed one layer further down the stack.",
+  "tags": [
+    "networking",
+    "http",
+    "web-performance"
+  ]
+}
