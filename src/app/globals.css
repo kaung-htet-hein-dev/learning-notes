@@ -211,6 +211,74 @@
   overflow-x: auto;
 }
 
+/* Syntax colors for rehype-highlight (hljs-* classes), tuned for the dark surface. */
+.prose-note pre code.hljs {
+  color: var(--text);
+}
+
+.prose-note .hljs-comment,
+.prose-note .hljs-quote,
+.prose-note .hljs-meta {
+  color: #8b949e;
+  font-style: italic;
+}
+
+.prose-note .hljs-keyword,
+.prose-note .hljs-selector-tag,
+.prose-note .hljs-doctag,
+.prose-note .hljs-type {
+  color: #ff7b72;
+}
+
+.prose-note .hljs-string,
+.prose-note .hljs-regexp,
+.prose-note .hljs-meta .hljs-string {
+  color: #a5d6ff;
+}
+
+.prose-note .hljs-number,
+.prose-note .hljs-literal,
+.prose-note .hljs-symbol {
+  color: #79c0ff;
+}
+
+/* Keys (JSON, YAML, CSS properties) stay distinct from string values. */
+.prose-note .hljs-attr,
+.prose-note .hljs-attribute,
+.prose-note .hljs-property {
+  color: #7ee787;
+}
+
+.prose-note .hljs-title,
+.prose-note .hljs-title.function_,
+.prose-note .hljs-section {
+  color: #d2a8ff;
+}
+
+.prose-note .hljs-built_in,
+.prose-note .hljs-variable,
+.prose-note .hljs-template-variable,
+.prose-note .hljs-params {
+  color: #ffa657;
+}
+
+.prose-note .hljs-name,
+.prose-note .hljs-tag,
+.prose-note .hljs-selector-class,
+.prose-note .hljs-selector-id {
+  color: #7ee787;
+}
+
+.prose-note .hljs-addition {
+  color: #aff5b4;
+  background: #033a16;
+}
+
+.prose-note .hljs-deletion {
+  color: #ffdcd7;
+  background: #67060c;
+}
+
 /* Mermaid diagrams sit on the code-block surface and scale down to fit the column. */
 .prose-note .mermaid-diagram {
   margin-block: 1.7em;
